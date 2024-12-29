@@ -20,18 +20,29 @@ sealed class HomeUiState{
 class HomeViewModel(private val mhs: MahasiswaRepository) : ViewModel(){
     var mhsUiState: HomeUiState by mutableStateOf(HomeUiState.Loading)
         private set
+    var isRefreshing by mutableStateOf(false)
+        private set
+    var snackbarMessage: String? by mutableStateOf(null)
+        private set
     init {
         getmhs()
     }
 
-    fun getmhs(){
+    fun getmhs() {
         viewModelScope.launch {
+            isRefreshing = true
             mhsUiState = try {
                 HomeUiState.Success(mhs.getMahasiswa())
-            }catch (e: IOException){
+            } catch (e: IOException) {
                 HomeUiState.Error
-            }catch (e: HttpException){
+                snackbarMessage = "Network error: ${e.message}"
                 HomeUiState.Error
+            } catch (e: HttpException) {
+                HomeUiState.Error
+                snackbarMessage = "HTTP error: ${e.message}"
+                HomeUiState.Error
+            } finally {
+                isRefreshing = false
             }
         }
     }
@@ -48,3 +59,4 @@ class HomeViewModel(private val mhs: MahasiswaRepository) : ViewModel(){
         }
     }
 }
+
