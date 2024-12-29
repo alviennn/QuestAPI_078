@@ -2,6 +2,10 @@ package com.example.remotedatabase.ui.viewmodel
 
 import com.example.remotedatabase.model.Mahasiswa
 
+data class InsertUiState(
+    val insertUiEvent: InsertUiEvent = InsertUiEvent()
+)
+
 data class InsertUiEvent(
     val nim: String = "",
     val nama: String = "",
